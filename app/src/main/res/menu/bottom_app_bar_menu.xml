@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/btnSearch"
+        android:icon="@drawable/ic_search_black_24dp"
+        android:iconTint="#FFFFFF"
+        android:title="Search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="always" />
+
+    <item android:title="Add Event"
+        android:id="@+id/btnAppBarAddEvent"
+        />
+    <item android:title="Contact Me"
+        android:id="@+id/btnAppBarContactMe"
+        />
+    <item android:title="About"
+        android:id="@+id/btnAppBarAbout"
+        />
+</menu>
