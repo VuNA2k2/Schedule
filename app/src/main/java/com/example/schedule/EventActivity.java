@@ -1,5 +1,8 @@
 package com.example.schedule;
 
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.hardware.lights.Light;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.schedule.Controller.Application;
+import com.example.schedule.Controller.Interface;
 import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -30,7 +34,6 @@ public class EventActivity extends AppCompatActivity{
     private Toolbar topAppBar;
     Adapter.EventAdapter adapter = null;
     String dayName;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +60,36 @@ public class EventActivity extends AppCompatActivity{
     private void init() {
         btnAdd = (FloatingActionButton) findViewById(R.id.btnAdd);
         listEvent = (RecyclerView) findViewById(R.id.listEvent);
-        adapter = new Adapter.EventAdapter(events, this);
+        adapter = new Adapter.EventAdapter(events, new Interface.ItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                // doing something
+            }
+
+            @Override
+            public void onItemLongClick(int position) {
+                new AlertDialog.Builder(EventActivity.this)
+                        .setIcon(R.drawable.delete_icon)
+                        .setTitle("Delete.")
+                        .setMessage("Do you want to delete this event?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int id) {
+                                events.remove(position);
+                                for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
+                                    if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
+                                        Application.getInstance().getDays().get(i).getEvents().remove(position);
+                                        adapter.notifyDataSetChanged();
+                                        break;
+                                    }
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                        })
+                        .setNegativeButton("No", null)
+                        .show();
+            }
+        });
         topAppBar = (Toolbar) findViewById(R.id.topAppBar);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listEvent.setLayoutManager(linearLayout);
@@ -76,7 +108,7 @@ public class EventActivity extends AppCompatActivity{
         events.add(new Event("Doing something", "12:00", dayName));
         for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
             if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
-                Application.getInstance().getDays().get(i).getEvents().addAll(events);
+                Application.getInstance().getDays().get(i).getEvents().add(events.get(events.size() - 1));
                 adapter.notifyDataSetChanged();
                 break;
             }

@@ -4,7 +4,7 @@ import android.view.View;
 
 public class Interface {
     public static interface ItemClickListener {
-        void onItemClick(View view, int position);
-        void onItemLongClick(View view, int position);
+        void onItemClick(int position);
+        void onItemLongClick(int position);
     }
 }

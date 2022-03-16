@@ -40,12 +40,12 @@ public class MainActivity extends AppCompatActivity {
         listDays.setHasFixedSize(true);
         adapter = new Adapter.DayAdapter(Application.getInstance().getDays(), new Interface.ItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
+            public void onItemClick(int position) {
                 changeState(position);
             }
 
             @Override
-            public void onItemLongClick(View view, int position) {
+            public void onItemLongClick(int position) {
                 Toast.makeText(MainActivity.this, Application.getInstance().getDays().get(position).getName(), Toast.LENGTH_SHORT).show();
             }
         });
