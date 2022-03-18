@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
+import com.example.schedule.Controller.Util;
 import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -84,6 +85,7 @@ public class EventActivity extends AppCompatActivity{
                                     }
                                 }
                                 adapter.notifyDataSetChanged();
+                                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
                             }
                         })
                         .setNegativeButton("No", null)
@@ -110,6 +112,7 @@ public class EventActivity extends AppCompatActivity{
             if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
                 Application.getInstance().getDays().get(i).getEvents().add(events.get(events.size() - 1));
                 adapter.notifyDataSetChanged();
+                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
                 break;
             }
         }

@@ -10,13 +10,16 @@
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always" />
 
-    <item android:title="Add Event"
+    <item
         android:id="@+id/btnAppBarAddEvent"
-        />
-    <item android:title="Contact Me"
+        android:iconTint="#000000"
+        android:title="Add Event" />
+    <item
         android:id="@+id/btnAppBarContactMe"
-        />
-    <item android:title="About"
+        android:iconTint="#000000"
+        android:title="Contact Me" />
+    <item
         android:id="@+id/btnAppBarAbout"
-        />
+        android:iconTint="#000000"
+        android:title="About" />
 </menu>

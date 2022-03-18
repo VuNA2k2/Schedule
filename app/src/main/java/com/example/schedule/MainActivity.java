@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
+import com.example.schedule.Controller.Util;
 import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
 
@@ -29,10 +30,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        loadData();
         init();
         onClick();
         //onLongClick();
     }
+
+    private void loadData() {
+        if(Util.getInstance().reader("Days.DAT",this).size() == 0) {
+            Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
+        }
+        else {
+            Application.getInstance().setDays(Util.getInstance().reader("Days.DAT", this));
+        }
+    }
+
     private void init() {
         listDays = (RecyclerView) findViewById(R.id.listDays);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -104,5 +116,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         adapter.notifyDataSetChanged();
+        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
     }
 }

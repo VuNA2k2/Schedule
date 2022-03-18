@@ -1,9 +1,10 @@
 package com.example.schedule.Model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day {
+public class Day implements Serializable {
     private String name;
     private List<Event> events = new ArrayList<>();
 

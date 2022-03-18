@@ -1,12 +1,14 @@
 package com.example.schedule.Controller;
 
+import android.icu.util.ULocale;
+
 import com.example.schedule.Model.Day;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Application {
-    private static List<Day> days = new ArrayList<>();
+    private List<Day> days = new ArrayList<>();
     private static Application instance;
     private Application() {
         days.add(new Day("Monday"));
@@ -25,5 +27,9 @@ public class Application {
 
     public List<Day> getDays() {
         return days;
+    }
+
+    public void setDays(List<Day> days) {
+        this.days = days;
     }
 }
