@@ -12,8 +12,19 @@
         android:background="@drawable/round_border_day"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="80dp"
+            android:layout_height="68dp"
+            app:layout_constraintEnd_toEndOf="@+id/listEventMini"
+            app:layout_constraintStart_toStartOf="@+id/listEventMini"
+            app:layout_constraintTop_toTopOf="@+id/listEventMini"
+            app:srcCompat="@drawable/ic_baseline_event_note_24" />
 
         <TextView
             android:id="@+id/txtDay"
@@ -22,7 +33,7 @@
             android:layout_marginStart="16dp"
             android:text="TextView"
             android:textColor="@color/black"
-            android:textSize="20dp"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

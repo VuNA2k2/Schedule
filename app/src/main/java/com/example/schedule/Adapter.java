@@ -74,6 +74,11 @@ public class Adapter {
                     }
                 });
                 holder.listEventMini.setAdapter(adapter);
+            } else {
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.VERTICAL, false);
+                holder.listEventMini.setLayoutManager(linearLayoutManager);
+                EventMiniAdapter adapter = new EventMiniAdapter();
+                holder.listEventMini.setAdapter(adapter);
             }
 
             //set on click
