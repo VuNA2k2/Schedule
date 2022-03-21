@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, Application.getInstance().getDays().get(position).getName(), Toast.LENGTH_SHORT).show();
             }
         });
+        adapter.setActivity(MainActivity.this);
         adapter.notifyDataSetChanged();
         listDays.setAdapter(adapter);
     }
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i < Application.getInstance().getDays().get(position).getEvents().size(); i ++) {
             intent.putExtra("eventName" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getName());
             intent.putExtra("eventTime" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getTime());
+            intent.putExtra("status" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getStatus());
         }
         startActivity(intent);
     }

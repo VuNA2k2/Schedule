@@ -7,4 +7,7 @@ public class Interface {
         void onItemClick(int position);
         void onItemLongClick(int position);
     }
+    public static interface ItemChangeStatus {
+        void changeStatus(int position, boolean bool);
+    }
 }

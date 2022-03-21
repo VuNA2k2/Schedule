@@ -49,7 +49,7 @@ public class EventActivity extends AppCompatActivity{
         dayName = bundle.getString("dayName");
         if(bundle != null) {
             for(int i = 0; i < bundle.getInt("eventSize"); i ++){
-                events.add(new Event(bundle.getString("eventName" + String.valueOf(i)), bundle.getString("eventTime" + String.valueOf(i)), bundle.getString("dayName")));
+                events.add(new Event(bundle.getString("eventName" + String.valueOf(i)), bundle.getString("eventTime" + String.valueOf(i)), bundle.getString("dayName"), bundle.getBoolean("status" + String.valueOf(i))));
             }
         }
         adapter.setData(events);
@@ -77,8 +77,8 @@ public class EventActivity extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int id) {
                                 events.remove(position);
-                                for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
-                                    if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
+                                for (int i = 0; i < Application.getInstance().getDays().size(); i++) {
+                                    if (Application.getInstance().getDays().get(i).getName().equals(dayName)) {
                                         Application.getInstance().getDays().get(i).getEvents().remove(position);
                                         adapter.notifyDataSetChanged();
                                         break;
@@ -90,6 +90,18 @@ public class EventActivity extends AppCompatActivity{
                         })
                         .setNegativeButton("No", null)
                         .show();
+            }
+        }, new Interface.ItemChangeStatus() {
+            @Override
+            public void changeStatus(int position, boolean bool) {
+                events.get(position).setStatus(bool);
+                for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
+                    if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
+                        Application.getInstance().getDays().get(i).getEvents().get(position).setStatus(bool);
+                        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
+                        break;
+                    }
+                }
             }
         });
         topAppBar = (Toolbar) findViewById(R.id.topAppBar);

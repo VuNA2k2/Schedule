@@ -4,15 +4,24 @@ import static com.google.android.material.internal.ContextUtils.getActivity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,13 +31,14 @@ import com.example.schedule.Model.Event;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PrimitiveIterator;
 
 public class Adapter {
 
     public static class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
         private List<Day> days = new ArrayList<>();
         private Interface.ItemClickListener itemClickListener;
-        private Context context;
+        private Activity activity;
         public DayAdapter(List<Day> days, Interface.ItemClickListener itemClickListener) {
             this.days = days;
             this.itemClickListener = itemClickListener;
@@ -40,8 +50,8 @@ public class Adapter {
             notifyDataSetChanged();
         }
 
-        public void setContext(Context context) {
-            this.context = context;
+        public void setActivity(Activity activity) {
+            this.activity = activity;
         }
 
         @NonNull
@@ -59,28 +69,13 @@ public class Adapter {
             holder.txtDay.setText(days.get(position).getName());
 
             // set list event mini
-            if(days.get(position).getEvents().size() != 0) {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.VERTICAL, false);
-                holder.listEventMini.setLayoutManager(linearLayoutManager);
-                EventMiniAdapter adapter = new EventMiniAdapter(days.get(position).getEvents(), new Interface.ItemClickListener() {
-                    @Override
-                    public void onItemClick(int _position) {
-                        itemClickListener.onItemClick(position);
-                    }
-
-                    @Override
-                    public void onItemLongClick(int _position) {
-
-                    }
-                });
-                holder.listEventMini.setAdapter(adapter);
-            } else {
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context,RecyclerView.VERTICAL, false);
-                holder.listEventMini.setLayoutManager(linearLayoutManager);
-                EventMiniAdapter adapter = new EventMiniAdapter();
-                holder.listEventMini.setAdapter(adapter);
+            List<Event> tmp = new ArrayList<>();
+            for(Event event : days.get(position).getEvents()) {
+                if(event.getStatus() == true) tmp.add(event);
             }
-
+            EventMiniAdapter adapter = new EventMiniAdapter(tmp, activity);
+            holder.spMiniEvent.setAdapter(adapter);
+            
             //set on click
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -97,12 +92,8 @@ public class Adapter {
                 }
             });
 
-            holder.listEventMini.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemClickListener.onItemClick(position);
-                }
-            });
+            if(tmp.size() == 0) holder.txtMessage.setText("No tasks yet");
+            else holder.txtMessage.setText(tmp.size() + " tasks to complete");
         }
 
         @Override
@@ -111,14 +102,13 @@ public class Adapter {
         }
 
         public class DayViewHolder extends RecyclerView.ViewHolder{
-            private TextView txtDay;
-            private RecyclerView listEventMini;
-            private EventMiniAdapter adapter = new EventMiniAdapter();
+            private TextView txtDay, txtMessage;
+            private Spinner spMiniEvent;
             public DayViewHolder(@NonNull View itemView) {
                 super(itemView);
                 txtDay = (TextView) itemView.findViewById(R.id.txtDay);
-                listEventMini = (RecyclerView) itemView.findViewById(R.id.listEventMini);
-                listEventMini.setAdapter(adapter);
+                spMiniEvent = (Spinner) itemView.findViewById(R.id.spMiniEvent);
+                txtMessage = (TextView) itemView.findViewById(R.id.txtMessage);
             }
         }
     }
@@ -126,10 +116,12 @@ public class Adapter {
     public static class EventAdapter extends RecyclerView.Adapter<EventAdapter.EventViewHolder> {
         private List<Event> events = new ArrayList<>();
         private Interface.ItemClickListener itemClickListener;
+        private Interface.ItemChangeStatus itemChangeStatus;
 
-        public EventAdapter(List<Event> events, Interface.ItemClickListener itemClickListener) {
+        public EventAdapter(List<Event> events, Interface.ItemClickListener itemClickListener, Interface.ItemChangeStatus itemChangeStatus) {
             this.events = events;
             this.itemClickListener = itemClickListener;
+            this.itemChangeStatus = itemChangeStatus;
             notifyDataSetChanged();
         }
 
@@ -163,55 +155,12 @@ public class Adapter {
                     return true;
                 }
             });
-        }
-
-        @Override
-        public int getItemCount() {
-            return events.size();
-        }
-
-        public class EventViewHolder extends RecyclerView.ViewHolder{
-            private TextView txtEventName, txtEventTime;
-            public EventViewHolder(@NonNull View itemView) {
-                super(itemView);
-                txtEventName = (TextView) itemView.findViewById(R.id.txtEventName);
-                txtEventTime = (TextView) itemView.findViewById(R.id.txtEventTime);
-            }
-        }
-    }
-    public static class EventMiniAdapter extends RecyclerView.Adapter<EventMiniAdapter.EventMiniViewHolder> {
-        private List<Event> events = new ArrayList<>();
-        Interface.ItemClickListener itemClickListener;
-        public EventMiniAdapter() {
-        }
-
-        public EventMiniAdapter(List<Event> events, Interface.ItemClickListener itemClickListener) {
-            this.events = events;
-            this.itemClickListener = itemClickListener;
-            notifyDataSetChanged();
-        }
-
-        public void setData(List<Event> events) {
-            this.events = events;
-            notifyDataSetChanged();
-        }
-
-        @NonNull
-        @Override
-        public EventMiniViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.event_mini_item, parent, false);
-            return new EventMiniViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull EventMiniViewHolder holder, @SuppressLint("RecyclerView") int position) {
-            if(events.get(position) == null) return;
-            holder.txtEventMiniName.setText(events.get(position).getName());
-            holder.txtEventMiniTime.setText(events.get(position).getTime());
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
+            // set status;
+            holder.swEventOnOff.setChecked(events.get(position).getStatus());
+            holder.swEventOnOff.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
-                public void onClick(View view) {
-                    itemClickListener.onItemClick(position);
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    itemChangeStatus.changeStatus(position, b);
                 }
             });
         }
@@ -221,13 +170,52 @@ public class Adapter {
             return events.size();
         }
 
-        public class EventMiniViewHolder extends RecyclerView.ViewHolder {
-            private TextView txtEventMiniName, txtEventMiniTime;
-            public EventMiniViewHolder(@NonNull View itemView) {
+        public class EventViewHolder extends RecyclerView.ViewHolder{
+            private TextView txtEventName, txtEventTime;
+            private Switch swEventOnOff;
+            public EventViewHolder(@NonNull View itemView) {
                 super(itemView);
-                txtEventMiniName = (TextView) itemView.findViewById(R.id.txtEventMiniName);
-                txtEventMiniTime = (TextView) itemView.findViewById(R.id.txtEventMiniTime);
+                txtEventName = (TextView) itemView.findViewById(R.id.txtEventName);
+                txtEventTime = (TextView) itemView.findViewById(R.id.txtEventTime);
+                swEventOnOff = (Switch) itemView.findViewById(R.id.swEventOnOff);
             }
+        }
+    }
+    public static class EventMiniAdapter extends BaseAdapter {
+
+        private List<Event> events = new ArrayList<>();
+        private Activity activity;
+
+        public EventMiniAdapter(List<Event> events, Activity activity) {
+            this.events = events;
+            this.activity = activity;
+        }
+
+        @Override
+        public int getCount() {
+            return events.size();
+        }
+
+        @Override
+        public Object getItem(int i) {
+            return events.get(i);
+        }
+
+        @Override
+        public long getItemId(int i) {
+            return i;
+        }
+
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            view = LayoutInflater.from(activity).inflate(R.layout.event_mini_item, viewGroup, false);
+            TextView txtEventMiniName;
+            TextView txtEventMiniTime;
+            txtEventMiniName = view.findViewById(R.id.txtEventMiniName);
+            txtEventMiniTime = view.findViewById(R.id.txtEventMiniTime);
+            txtEventMiniName.setText(events.get(i).getName());
+            txtEventMiniTime.setText(events.get(i).getTime());
+            return view;
         }
     }
 }

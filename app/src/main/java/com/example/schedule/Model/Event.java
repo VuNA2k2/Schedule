@@ -6,11 +6,20 @@ public class Event implements Serializable {
     private String name;
     private String time; // hh:mm
     private String day;
+    private Boolean status;
 
     public Event(String name, String time, String day) {
         this.name = name;
         this.time = time;
         this.day = day;
+        status = true;
+    }
+
+    public Event(String name, String time, String day, Boolean status) {
+        this.name = name;
+        this.time = time;
+        this.day = day;
+        this.status = status;
     }
 
     public String getName() {
@@ -35,5 +44,13 @@ public class Event implements Serializable {
 
     public void setDay(String day) {
         this.day = day;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 }
