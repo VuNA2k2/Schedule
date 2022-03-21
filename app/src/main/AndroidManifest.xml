@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Schedule">
         <activity
-            android:name=".IntroActivity"
+            android:name=".View.IntroActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="true"
             android:theme="@style/Theme.Schedule.Fullscreen">
@@ -20,8 +20,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
-        <activity android:name=".EventActivity" />
+        <activity android:name=".View.MainActivity" />
+        <activity android:name=".View.EventActivity" />
     </application>
 
 </manifest>

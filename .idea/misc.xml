@@ -4,6 +4,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/animation_down.xml" value="0.2520833333333333" />
+        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/custom_ripple.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/ic_baseline_access_time_24.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.403125" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/ic_baseline_event.xml" value="0.403125" />
@@ -15,6 +16,7 @@
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/day_item.xml" value="0.33" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/event_item.xml" value="0.7612193056731583" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/event_mini_item.xml" value="0.67" />
+        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/fragment_event.xml" value="0.3625" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/item.xml" value="0.5" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/list_event_activity.xml" value="0.33" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/list_item_single.xml" value="0.38697916666666665" />

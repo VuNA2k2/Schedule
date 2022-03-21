@@ -1,4 +1,4 @@
-package com.example.schedule;
+package com.example.schedule.Controller;
 
 import static com.google.android.material.internal.ContextUtils.getActivity;
 
@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
+import com.example.schedule.R;
 
 import java.util.ArrayList;
 import java.util.List;

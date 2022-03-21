@@ -1,29 +1,25 @@
-package com.example.schedule;
+package com.example.schedule.View;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.hardware.lights.Light;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListView;
+import android.view.WindowManager;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.schedule.Controller.Adapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.Util;
-import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
+import com.example.schedule.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,15 +73,7 @@ public class EventActivity extends AppCompatActivity{
                             @Override
                             public void onClick(DialogInterface dialogInterface, int id) {
                                 events.remove(position);
-                                for (int i = 0; i < Application.getInstance().getDays().size(); i++) {
-                                    if (Application.getInstance().getDays().get(i).getName().equals(dayName)) {
-                                        Application.getInstance().getDays().get(i).getEvents().remove(position);
-                                        adapter.notifyDataSetChanged();
-                                        break;
-                                    }
-                                }
-                                adapter.notifyDataSetChanged();
-                                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
+                                adapter.setData(events);
                             }
                         })
                         .setNegativeButton("No", null)
@@ -95,18 +83,12 @@ public class EventActivity extends AppCompatActivity{
             @Override
             public void changeStatus(int position, boolean bool) {
                 events.get(position).setStatus(bool);
-                for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
-                    if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
-                        Application.getInstance().getDays().get(i).getEvents().get(position).setStatus(bool);
-                        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
-                        break;
-                    }
-                }
             }
         });
         topAppBar = (Toolbar) findViewById(R.id.topAppBar);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listEvent.setLayoutManager(linearLayout);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SCREEN_ORIENTATION_CHANGED);
     }
 
     private void onClick() {
@@ -120,14 +102,7 @@ public class EventActivity extends AppCompatActivity{
 
     private void addEvent() {
         events.add(new Event("Doing something", "12:00", dayName));
-        for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
-            if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
-                Application.getInstance().getDays().get(i).getEvents().add(events.get(events.size() - 1));
-                adapter.notifyDataSetChanged();
-                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
-                break;
-            }
-        }
+        adapter.setData(events);
     }
 
     @Override
@@ -140,11 +115,40 @@ public class EventActivity extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        update();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        update();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        update();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        update();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    private void update() {
+        for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
+            if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
+                Application.getInstance().getDays().get(i).setEvents(events);
+                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
+                break;
+            }
+        }
     }
 }

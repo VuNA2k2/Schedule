@@ -1,12 +1,7 @@
-package com.example.schedule;
+package com.example.schedule.View;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -14,14 +9,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.schedule.Controller.Adapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.Util;
-import com.example.schedule.Model.Day;
-import com.example.schedule.Model.Event;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.schedule.R;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listDays;
@@ -119,5 +111,23 @@ public class MainActivity extends AppCompatActivity {
         super.onRestart();
         adapter.notifyDataSetChanged();
         Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
     }
 }

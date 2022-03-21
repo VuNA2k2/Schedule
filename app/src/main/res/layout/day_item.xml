@@ -4,12 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/transparent"
+    android:background="@drawable/custom_ripple"
     android:backgroundTintMode="multiply">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="1dp"
         android:layout_marginBottom="1dp"
         android:background="@drawable/round_border_day"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -56,6 +58,8 @@
             android:id="@+id/spMiniEvent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="8dp"
             android:gravity="center"
             android:popupBackground="@drawable/round_border_event"
             app:layout_constraintBottom_toBottomOf="parent"

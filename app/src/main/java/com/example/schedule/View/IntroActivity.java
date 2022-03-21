@@ -1,4 +1,4 @@
-package com.example.schedule;
+package com.example.schedule.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.schedule.R;
+import com.example.schedule.View.MainActivity;
 
 public class IntroActivity extends AppCompatActivity {
     private TextView txtAppName;
@@ -23,7 +26,7 @@ public class IntroActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                 finish();
             }
         },1500);

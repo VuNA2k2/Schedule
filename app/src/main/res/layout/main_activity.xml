@@ -32,4 +32,5 @@
         app:navigationIcon="@drawable/ic_baseline_menu"
         app:title="@string/app_name"
         app:titleTextColor="#FFFFFF" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
