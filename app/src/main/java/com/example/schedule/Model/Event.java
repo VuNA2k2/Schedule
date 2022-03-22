@@ -6,7 +6,7 @@ public class Event implements Serializable {
     private String name;
     private String time; // hh:mm
     private String day;
-    private Boolean status;
+    private boolean status;
 
     public Event(String name, String time, String day) {
         this.name = name;
@@ -46,11 +46,11 @@ public class Event implements Serializable {
         this.day = day;
     }
 
-    public Boolean getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 }

@@ -9,22 +9,23 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.schedule.Controller.Adapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.Util;
+import com.example.schedule.Controller.Adapter.EventAdapter;
 import com.example.schedule.Model.Event;
 import com.example.schedule.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,8 +38,9 @@ public class EventActivity extends AppCompatActivity{
     private RecyclerView listEvent;
     private FloatingActionButton btnAdd;
     private Toolbar topAppBar;
-    Adapter.EventAdapter adapter = null;
+    EventAdapter adapter = null;
     String dayName;
+    private int index = 0;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,11 +53,13 @@ public class EventActivity extends AppCompatActivity{
     private void setData() {
         Bundle bundle = getIntent().getExtras();
         dayName = bundle.getString("dayName");
-        if(bundle != null) {
-            for(int i = 0; i < bundle.getInt("eventSize"); i ++){
-                events.add(new Event(bundle.getString("eventName" + String.valueOf(i)), bundle.getString("eventTime" + String.valueOf(i)), bundle.getString("dayName"), bundle.getBoolean("status" + String.valueOf(i))));
+        for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
+            if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
+                index = i;
+                break;
             }
         }
+        events.addAll(Application.getInstance().getDays().get(index).getEvents());
         adapter.setData(events);
         listEvent.setAdapter(adapter);
         setSupportActionBar(topAppBar);
@@ -65,7 +69,7 @@ public class EventActivity extends AppCompatActivity{
     private void init() {
         btnAdd = (FloatingActionButton) findViewById(R.id.btnAdd);
         listEvent = (RecyclerView) findViewById(R.id.listEvent);
-        adapter = new Adapter.EventAdapter(events, new Interface.ItemClickListener() {
+        adapter = new EventAdapter(events, new Interface.ItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 // doing something
@@ -73,19 +77,7 @@ public class EventActivity extends AppCompatActivity{
 
             @Override
             public void onItemLongClick(int position) {
-                new AlertDialog.Builder(EventActivity.this)
-                        .setIcon(R.drawable.delete_icon)
-                        .setTitle("Delete.")
-                        .setMessage("Do you want to delete this event?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int id) {
-                                events.remove(position);
-                                adapter.setData(events);
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
+                removeEvent(position);
             }
         }, new Interface.ItemChangeStatus() {
             @Override
@@ -96,7 +88,46 @@ public class EventActivity extends AppCompatActivity{
         topAppBar = (Toolbar) findViewById(R.id.topAppBar);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listEvent.setLayoutManager(linearLayout);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SCREEN_ORIENTATION_CHANGED);
+        listEvent.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                if(dy > 0) btnAdd.hide();
+                else btnAdd.show();
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                events.remove(position);
+                adapter.setData(events);
+            }
+        });
+
+        itemTouchHelper.attachToRecyclerView(listEvent);
+    }
+
+    private void removeEvent(int position) {
+        new AlertDialog.Builder(EventActivity.this)
+                .setIcon(R.drawable.delete_icon)
+                .setTitle("Delete.")
+                .setMessage("Do you want to delete this event?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int id) {
+                        events.remove(position);
+                        adapter.setData(events);
+                    }
+                })
+                .setNegativeButton("No", null)
+                .show();
     }
 
     private void onClick() {
@@ -195,12 +226,13 @@ public class EventActivity extends AppCompatActivity{
     }
 
     private void update() {
-        for(int i = 0; i < Application.getInstance().getDays().size(); i ++) {
-            if(Application.getInstance().getDays().get(i).getName().equals(dayName)) {
-                Application.getInstance().getDays().get(i).setEvents(events);
-                Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
-                break;
-            }
-        }
+        Application.getInstance().getDays().get(index).setEvents(events);
+        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), EventActivity.this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(adapter != null) adapter.setData(events);
     }
 }

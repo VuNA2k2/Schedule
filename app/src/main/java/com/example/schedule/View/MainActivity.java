@@ -9,15 +9,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.schedule.Controller.Adapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.Util;
+import com.example.schedule.Controller.Adapter.DayAdapter;
 import com.example.schedule.R;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listDays;
-    private Adapter.DayAdapter adapter = null;
+    private DayAdapter adapter = null;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listDays.setLayoutManager(linearLayout);
         listDays.setHasFixedSize(true);
-        adapter = new Adapter.DayAdapter(Application.getInstance().getDays(), new Interface.ItemClickListener() {
+        adapter = new DayAdapter(Application.getInstance().getDays(), new Interface.ItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 changeState(position);
@@ -65,46 +65,8 @@ public class MainActivity extends AppCompatActivity {
     public void changeState(int position) {
         Intent intent = new Intent(MainActivity.this, EventActivity.class);
         intent.putExtra("dayName", Application.getInstance().getDays().get(position).getName());
-        intent.putExtra("eventSize", Application.getInstance().getDays().get(position).getEvents().size());
-        for(int i = 0; i < Application.getInstance().getDays().get(position).getEvents().size(); i ++) {
-            intent.putExtra("eventName" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getName());
-            intent.putExtra("eventTime" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getTime());
-            intent.putExtra("status" + String.valueOf(i), Application.getInstance().getDays().get(position).getEvents().get(i).getStatus());
-        }
         startActivity(intent);
     }
-
-//    private void onLongClick() {
-//        listDays.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int pos, long l) {
-//                new AlertDialog.Builder(MainActivity.this)
-//                        .setIcon(R.drawable.delete_icon)
-//                        .setTitle("Delete.")
-//                        .setMessage("Do you want to delete this event?")
-//                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                days.remove(pos);
-//                                adapter.notifyDataSetChanged();
-//                            }
-//                        })
-//                        .setNegativeButton("No", null)
-//                        .show();
-//                listDays.setAdapter(adapter);
-//
-//                  time picker
-//                new TimePickerDialog(MainActivity.this, new TimePickerDialog.OnTimeSetListener() {
-//                    @Override
-//                    public void onTimeSet(TimePicker timePicker, int i, int i1) {
-//
-//                    }
-//                },24,60,true).show();
-//                return true;
-//          }
-//        });
-//    }
-
 
     @Override
     protected void onRestart() {
