@@ -1,11 +1,19 @@
 package com.example.schedule.View;
 
 import android.app.AlertDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -101,8 +109,52 @@ public class EventActivity extends AppCompatActivity{
     }
 
     private void addEvent() {
-        events.add(new Event("Doing something", "12:00", dayName));
-        adapter.setData(events);
+        LayoutInflater layoutInflater = LayoutInflater.from(EventActivity.this);
+        View view = layoutInflater.inflate(R.layout.dialog_add_event, null);
+        AlertDialog alertDio = new AlertDialog.Builder(EventActivity.this)
+                .setView(view)
+                .show();
+        alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        Button btnAddEvent;
+        TextView txtTime;
+        EditText edtEventName, edtNote;
+        txtTime = (TextView) view.findViewById(R.id.txtTime);
+        edtEventName = (EditText) view.findViewById(R.id.edtEventName);
+        edtNote = (EditText) view.findViewById(R.id.edtNote);
+        btnAddEvent = (Button) view.findViewById(R.id.btnAddEvent);
+
+        txtTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean is24HView = true;
+                int selectedHour = 10;
+                int selectedMinute = 20;
+                final int[] lastSelectedHour = new int[1];
+                final int[] lastSelectedMinute = new int[1];
+                TimePickerDialog.OnTimeSetListener timeSetListener = new TimePickerDialog.OnTimeSetListener() {
+
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        txtTime.setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute));
+                        lastSelectedHour[0] = hourOfDay;
+                        lastSelectedMinute[0] = minute;
+                    }
+                };
+                TimePickerDialog timePickerDialog = new TimePickerDialog(EventActivity.this,
+                        timeSetListener, lastSelectedHour[0], lastSelectedMinute[0], is24HView);
+                timePickerDialog.show();
+            }
+        });
+
+        btnAddEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                events.add(new Event(edtEventName.getText().toString().trim(), txtTime.getText().toString().trim(),dayName));
+                adapter.setData(events);
+                alertDio.dismiss();
+            }
+        });
     }
 
     @Override
