@@ -2,6 +2,8 @@ package com.example.schedule.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Adapter;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -13,7 +15,12 @@ import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.Util;
 import com.example.schedule.Controller.Adapter.DayAdapter;
+import com.example.schedule.Database.EventsDatabase;
+import com.example.schedule.Model.Day;
+import com.example.schedule.Model.Event;
 import com.example.schedule.R;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listDays;
@@ -24,19 +31,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_activity);
         loadData();
         init();
-        onClick();
+        Log.e("Exception", "On create");
         //onLongClick();
     }
-
     private void loadData() {
-        if(Util.getInstance().reader("Days.DAT",this).size() == 0) {
-            Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
-        }
-        else {
-            Application.getInstance().setDays(Util.getInstance().reader("Days.DAT", this));
+        Application.getInstance();
+        List<Event> events = EventsDatabase.getInstance(this).eventDAO().getListEvents();
+        for(Event event : events) {
+            switch (event.getDay()) {
+                case "Monday":
+                    Application.getInstance().getDays().get(0).getEvents().add(event);
+                    break;
+                case "Tuesday":
+                    Application.getInstance().getDays().get(1).getEvents().add(event);
+                    break;
+                case "Wednesday":
+                    Application.getInstance().getDays().get(2).getEvents().add(event);
+                    break;
+                case "Thursday":
+                    Application.getInstance().getDays().get(3).getEvents().add(event);
+                    break;
+                case "Friday":
+                    Application.getInstance().getDays().get(4).getEvents().add(event);
+                    break;
+                case "Saturday":
+                    Application.getInstance().getDays().get(5).getEvents().add(event);
+                    break;
+                case "Sunday":
+                    Application.getInstance().getDays().get(6).getEvents().add(event);
+                    break;
+                default:
+                    break;
+            }
         }
     }
-
     private void init() {
         listDays = (RecyclerView) findViewById(R.id.listDays);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
@@ -58,10 +86,6 @@ public class MainActivity extends AppCompatActivity {
         listDays.setAdapter(adapter);
     }
 
-    private void onClick() {
-
-    }
-
     public void changeState(int position) {
         Intent intent = new Intent(MainActivity.this, EventActivity.class);
         intent.putExtra("dayName", Application.getInstance().getDays().get(position).getName());
@@ -72,24 +96,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         adapter.notifyDataSetChanged();
-        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        Util.getInstance().writer("Days.DAT", Application.getInstance().getDays(), MainActivity.this);
     }
 }

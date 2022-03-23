@@ -17,7 +17,8 @@
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/drawable/round_border_event_mini.xml" value="0.37864583333333335" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/activity_fullscreen.xml" value="0.221875" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/day_item.xml" value="0.33" />
-        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/dialog_add_event.xml" value="0.5" />
+        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/dialog_add_event.xml" value="0.41767068273092367" />
+        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/dialog_edit_event.xml" value="0.5" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/event_item.xml" value="0.7612193056731583" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/event_mini_item.xml" value="0.67" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/fragment_event.xml" value="0.5412130637636081" />
@@ -26,6 +27,7 @@
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/list_item_single.xml" value="0.38697916666666665" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/layout/main_activity.xml" value="0.33" />
         <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/menu/bottom_app_bar_menu.xml" value="0.38697916666666665" />
+        <entry key="..\:/Users/VuNAP/Documents/Android/Schedule/app/src/main/res/menu/pop_up_menu.xml" value="0.203125" />
       </map>
     </option>
   </component>

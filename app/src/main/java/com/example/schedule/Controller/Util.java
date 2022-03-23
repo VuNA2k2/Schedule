@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
-    private static final String path = "com\\example\\schedule\\DATA";
+    private static final String path = "com\\example\\schedule\\DATA\\";
     private Util() {
     }
 
@@ -25,15 +25,27 @@ public class Util {
     }
 
     public <T> List<T> reader(String fileName, Context context) {
-        List<T> list = new ArrayList<>();
+        FileInputStream fis = null;
+        ObjectInputStream objin = null;
+        List<T> list = null;
+
         try {
-            FileInputStream fis = context.openFileInput(path + fileName);
-            ObjectInputStream ojs = new ObjectInputStream(fis);
-            list = (List<T>) ojs.readObject();
-            fis.close();
-            ojs.close();
+            fis = context.openFileInput(path + fileName);
+            objin = new ObjectInputStream(fis);
+            list = (List<T>) objin.readObject();
+
         } catch (Exception e) {
-            Log.e("Exception","Read from file failed");
+            Log.e("Error", "Read failed");
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+                if (objin != null) {
+                    objin.close();
+                }
+            } catch (Exception e) {
+            }
         }
         return list;
     }
@@ -53,6 +65,11 @@ public class Util {
             e.printStackTrace();
         }
     }
+
+    public void checkEmptyException(String s) throws MyException.EmptyException {
+        if(s.length() == 0) throw new MyException.EmptyException();
+    }
+
 //        try {
 //            FileOutputStream fos = new FileOutputStream(path + fileName);
 //            ObjectOutputStream oos = new ObjectOutputStream(fos);

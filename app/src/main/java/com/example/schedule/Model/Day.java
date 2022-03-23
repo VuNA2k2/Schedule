@@ -1,10 +1,13 @@
 package com.example.schedule.Model;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Day implements Serializable {
+public class Day{
     private String name;
     private List<Event> events = new ArrayList<>();
 
