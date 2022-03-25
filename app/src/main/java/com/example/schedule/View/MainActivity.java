@@ -1,7 +1,10 @@
 package com.example.schedule.View;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.util.Log;
 import android.widget.Adapter;
 import android.widget.Toast;
@@ -13,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
+import com.example.schedule.Controller.Receiver.AlarmReceiver;
 import com.example.schedule.Controller.Util;
 import com.example.schedule.Controller.Adapter.DayAdapter;
 import com.example.schedule.Database.EventsDatabase;
@@ -20,6 +24,7 @@ import com.example.schedule.Model.Day;
 import com.example.schedule.Model.Event;
 import com.example.schedule.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {

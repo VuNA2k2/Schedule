@@ -1,8 +1,11 @@
 package com.example.schedule.View;
 
 import android.annotation.SuppressLint;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -15,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,13 +33,22 @@ import com.example.schedule.Controller.Adapter.EventAdapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.MyException;
+import com.example.schedule.Controller.Receiver.AlarmReceiver;
 import com.example.schedule.Controller.Util;
 import com.example.schedule.Database.EventsDatabase;
 import com.example.schedule.Model.Event;
 import com.example.schedule.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.timepicker.MaterialTimePicker;
+import com.google.android.material.timepicker.TimeFormat;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class EventActivity extends AppCompatActivity{
@@ -47,6 +60,19 @@ public class EventActivity extends AppCompatActivity{
     String dayName;
     ImageView img;
     private int index = 0;
+    private AlarmManager alarmManager;
+    private Intent intent;
+    private PendingIntent pendingIntent;
+    private Calendar calendar;
+    private MaterialTimePicker picker;
+    private Button btnAddEvent;
+    private TextView txtTime;
+    private EditText edtEventName, edtNote;
+    private Button btnSave;
+    private TextView txtEditTime;
+    private EditText edtEditEventName, edtEditNote;
+    private Switch swStatus;
+    private Map<Integer, PendingIntent> pendingIntentMap = new HashMap<>();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +127,15 @@ public class EventActivity extends AppCompatActivity{
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+        swipeToDelete();
+        img = (ImageView) findViewById(R.id.img);
+        alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        intent = new Intent(EventActivity.this, AlarmReceiver.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        calendar = Calendar.getInstance();
+    }
 
+    private void swipeToDelete() {
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
@@ -114,10 +148,7 @@ public class EventActivity extends AppCompatActivity{
                 deleteEvent(position);
             }
         });
-
         itemTouchHelper.attachToRecyclerView(listEvent);
-
-        img = (ImageView) findViewById(R.id.img);
     }
 
     private void addEvent() {
@@ -128,25 +159,18 @@ public class EventActivity extends AppCompatActivity{
                 .show();
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        Button btnAddEvent;
-        TextView txtTime;
-        EditText edtEventName, edtNote;
         txtTime = (TextView) view.findViewById(R.id.txtEditTime);
         edtEventName = (EditText) view.findViewById(R.id.edtEditEventName);
         edtNote = (EditText) view.findViewById(R.id.edtEditNote);
         btnAddEvent = (Button) view.findViewById(R.id.btnSave);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String currentTime = sdf.format(System.currentTimeMillis());
+        txtTime.setText(currentTime);
+
+        // set time
         txtTime.setOnClickListener(view1 -> {
-            final int[] lastSelectedHour = new int[1];
-            final int[] lastSelectedMinute = new int[1];
-            @SuppressLint({"DefaultLocale", "SetTextI18n"}) TimePickerDialog.OnTimeSetListener timeSetListener = (view11, hourOfDay, minute) -> {
-                txtTime.setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute));
-                lastSelectedHour[0] = hourOfDay;
-                lastSelectedMinute[0] = minute;
-            };
-            TimePickerDialog timePickerDialog = new TimePickerDialog(EventActivity.this,
-                    timeSetListener, lastSelectedHour[0], lastSelectedMinute[0], true);
-            timePickerDialog.show();
+            showTimePicker(txtTime);
         });
 
         btnAddEvent.setOnClickListener(view12 -> {
@@ -154,9 +178,12 @@ public class EventActivity extends AppCompatActivity{
                 Util.getInstance().checkEmptyException(edtEventName.getText().toString().trim());
                 Util.getInstance().checkEmptyException(txtTime.getText().toString().trim());
                 Event event = new Event(edtEventName.getText().toString().trim(), txtTime.getText().toString().trim(),dayName,true, edtNote.getText().toString().trim());
+                int id = (int)EventsDatabase.getInstance(this).eventDAO().insertEvent(event);
+                event.setId(id);
                 Application.getInstance().getDays().get(index).getEvents().add(event);
-                EventsDatabase.getInstance(this).eventDAO().insertEvent(event);
                 adapter.setData(Application.getInstance().getDays().get(index).getEvents());
+                sendData(edtEventName.getText().toString().trim(), edtNote.getText().toString().trim(), String.valueOf(id));
+                setAlarmManager(id);
                 alertDio.dismiss();
             } catch (MyException.EmptyException e) {
                 Toast.makeText(EventActivity.this, "Empty! Please re-enter.", Toast.LENGTH_SHORT).show();
@@ -164,6 +191,73 @@ public class EventActivity extends AppCompatActivity{
         });
         update();
         img.setVisibility(View.INVISIBLE);
+    }
+
+    private void sendData(String data1, String data2, String data3) {
+        intent.putExtra("eventName", data1);
+        intent.putExtra("eventNote", data2);
+        intent.putExtra("eventId", data3);
+    }
+    private final int WEEK = 604800000;
+
+    @SuppressLint("UnspecifiedImmutableFlag")
+    private void setAlarmManager(int rqc) {
+        pendingIntent = PendingIntent.getBroadcast(EventActivity.this, rqc, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        if(pendingIntentMap.get(rqc) == null)pendingIntentMap.put(rqc,pendingIntent);
+        if(System.currentTimeMillis() > calendar.getTimeInMillis()) alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + WEEK, pendingIntentMap.get(rqc));
+        else alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentMap.get(rqc));
+    }
+
+    private void showTimePicker(TextView txt) {
+        picker = new MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_24H)
+                .setHour(Integer.parseInt(txt.getText().toString().substring(0,2)))
+                .setMinute(Integer.parseInt(txt.getText().toString().substring(3,5)))
+                .setTitleText("Select Alarm Time")
+                .build();
+
+        picker.show(getSupportFragmentManager(),"Schedule");
+
+        picker.addOnPositiveButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txt.setText(String.format("%02d", picker.getHour()) + ":" + String.format("%02d", picker.getMinute()));
+
+                setCalendar(picker.getHour(), picker.getMinute());
+            }
+        });
+    }
+
+    private void setCalendar(int hourOfDay, int minute) {
+        switch (dayName) {
+            case "Monday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                break;
+            case "Tuesday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                break;
+            case "Wednesday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                break;
+            case "Thursday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                break;
+            case "Friday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                break;
+            case "Saturday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                break;
+            case "Sunday":
+                calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                break;
+            default:
+                break;
+        }
+        calendar.set(Calendar.HOUR_OF_DAY,hourOfDay);
+        calendar.set(Calendar.MINUTE,minute);
+        calendar.set(Calendar.SECOND,0);
+        calendar.set(Calendar.MILLISECOND,0);
     }
 
     @SuppressLint("SetTextI18n")
@@ -174,11 +268,6 @@ public class EventActivity extends AppCompatActivity{
                 .setView(view)
                 .show();
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-        Button btnSave;
-        TextView txtEditTime;
-        EditText edtEditEventName, edtEditNote;
-        @SuppressLint("UseSwitchCompatOrMaterialCode") Switch swStatus;
 
         txtEditTime = (TextView) view.findViewById(R.id.txtEditTime);
         edtEditEventName = (EditText) view.findViewById(R.id.edtEditEventName);
@@ -199,19 +288,11 @@ public class EventActivity extends AppCompatActivity{
             Application.getInstance().getDays().get(index).getEvents().get(position).setStatus(b);
         });
 
-        txtEditTime.setOnClickListener(view1 -> {
-            int selectedHour = Integer.parseInt(Application.getInstance().getDays().get(index).getEvents().get(position).getTime().substring(0,2));
-            int selectedMinute = Integer.parseInt(Application.getInstance().getDays().get(index).getEvents().get(position).getTime().substring(3,5));
-            final int[] lastSelectedHour = new int[1];
-            final int[] lastSelectedMinute = new int[1];
-            @SuppressLint("DefaultLocale") TimePickerDialog.OnTimeSetListener timeSetListener = (view11, hourOfDay, minute) -> {
-                txtEditTime.setText(String.format("%02d", hourOfDay) + ":" + String.format("%02d", minute));
-                lastSelectedHour[0] = hourOfDay;
-                lastSelectedMinute[0] = minute;
-            };
-            TimePickerDialog timePickerDialog = new TimePickerDialog(EventActivity.this,
-                    timeSetListener, selectedHour, selectedMinute, true);
-            timePickerDialog.show();
+        txtEditTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimePicker(txtEditTime);
+            }
         });
 
         btnSave.setOnClickListener(view12 -> {
@@ -223,6 +304,9 @@ public class EventActivity extends AppCompatActivity{
                 Application.getInstance().getDays().get(index).getEvents().get(position).setNote(edtEditNote.getText().toString().trim());
                 EventsDatabase.getInstance(EventActivity.this).eventDAO().updateEvent( Application.getInstance().getDays().get(index).getEvents().get(position));
                 adapter.setData(Application.getInstance().getDays().get(index).getEvents());
+                sendData(edtEditEventName.getText().toString().trim(), edtEditNote.getText().toString().trim(), String.valueOf( Application.getInstance().getDays().get(index).getEvents().get(position).getId()));
+                if(swStatus.isChecked()) setAlarmManager(Application.getInstance().getDays().get(index).getEvents().get(position).getId());
+                else if(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()) != null) alarmManager.cancel(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()));
                 alertDio.dismiss();
             } catch (MyException.EmptyException e) {
                 Toast.makeText(EventActivity.this, "Empty! Please re-enter.", Toast.LENGTH_SHORT).show();
@@ -245,6 +329,7 @@ public class EventActivity extends AppCompatActivity{
 
     private void deleteEvent(int position) {
         EventsDatabase.getInstance(this).eventDAO().deleteEvent(Application.getInstance().getDays().get(index).getEvents().get(position));
+        if(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()) != null)alarmManager.cancel(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()));
         Application.getInstance().getDays().get(index).getEvents().remove(position);
         adapter.setData(Application.getInstance().getDays().get(index).getEvents());
         Toast.makeText(EventActivity.this, "Delete successfully!...", Toast.LENGTH_SHORT).show();

@@ -13,8 +13,9 @@ import java.util.List;
 
 @Dao
 public interface EventDAO {
+
     @Insert
-    void insertEvent(Event event);
+    long insertEvent(Event event);
 
     @Query("SELECT * FROM events")
     List<Event> getListEvents();
