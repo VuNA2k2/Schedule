@@ -4,12 +4,10 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -18,7 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,6 +26,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.schedule.Controller.Adapter.EventAdapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
@@ -44,11 +42,9 @@ import com.google.android.material.timepicker.TimeFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 
 public class EventActivity extends AppCompatActivity{
@@ -62,17 +58,15 @@ public class EventActivity extends AppCompatActivity{
     private int index = 0;
     private AlarmManager alarmManager;
     private Intent intent;
-    private PendingIntent pendingIntent;
     private Calendar calendar;
     private MaterialTimePicker picker;
-    private Button btnAddEvent;
     private TextView txtTime;
     private EditText edtEventName, edtNote;
-    private Button btnSave;
     private TextView txtEditTime;
     private EditText edtEditEventName, edtEditNote;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch swStatus;
-    private Map<Integer, PendingIntent> pendingIntentMap = new HashMap<>();
+    private final Map<Integer, PendingIntent> pendingIntentMap = new HashMap<>();
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,8 +96,8 @@ public class EventActivity extends AppCompatActivity{
     }
 
     private void init() {
-        btnAdd = (FloatingActionButton) findViewById(R.id.btnAdd);
-        listEvent = (RecyclerView) findViewById(R.id.listEvent);
+        btnAdd = findViewById(R.id.btnAdd);
+        listEvent = findViewById(R.id.listEvent);
         adapter = new EventAdapter(Application.getInstance().getDays().get(index).getEvents(), new Interface.ItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -116,7 +110,7 @@ public class EventActivity extends AppCompatActivity{
             }
         });
         adapter.setContext(this);
-        topAppBar = (Toolbar) findViewById(R.id.topAppBar);
+        topAppBar = findViewById(R.id.topAppBar);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listEvent.setLayoutManager(linearLayout);
         listEvent.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -128,7 +122,8 @@ public class EventActivity extends AppCompatActivity{
             }
         });
         swipeToDelete();
-        img = (ImageView) findViewById(R.id.img);
+        img = findViewById(R.id.img);
+        Glide.with(getApplicationContext()).load(R.drawable.first_note).into(img);
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         intent = new Intent(EventActivity.this, AlarmReceiver.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
@@ -159,19 +154,18 @@ public class EventActivity extends AppCompatActivity{
                 .show();
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        txtTime = (TextView) view.findViewById(R.id.txtEditTime);
-        edtEventName = (EditText) view.findViewById(R.id.edtEditEventName);
-        edtNote = (EditText) view.findViewById(R.id.edtEditNote);
-        btnAddEvent = (Button) view.findViewById(R.id.btnSave);
+        txtTime = view.findViewById(R.id.txtEditTime);
+        edtEventName = view.findViewById(R.id.edtEditEventName);
+        edtNote = view.findViewById(R.id.edtEditNote);
+        Button btnAddEvent = view.findViewById(R.id.btnSave);
 
+        @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         String currentTime = sdf.format(System.currentTimeMillis());
         txtTime.setText(currentTime);
 
         // set time
-        txtTime.setOnClickListener(view1 -> {
-            showTimePicker(txtTime);
-        });
+        txtTime.setOnClickListener(view1 -> showTimePicker(txtTime));
 
         btnAddEvent.setOnClickListener(view12 -> {
             try {
@@ -184,13 +178,13 @@ public class EventActivity extends AppCompatActivity{
                 adapter.setData(Application.getInstance().getDays().get(index).getEvents());
                 sendData(edtEventName.getText().toString().trim(), edtNote.getText().toString().trim(), String.valueOf(id));
                 setAlarmManager(id);
+                img.setVisibility(View.INVISIBLE);
                 alertDio.dismiss();
             } catch (MyException.EmptyException e) {
                 Toast.makeText(EventActivity.this, "Empty! Please re-enter.", Toast.LENGTH_SHORT).show();
             }
         });
         update();
-        img.setVisibility(View.INVISIBLE);
     }
 
     private void sendData(String data1, String data2, String data3) {
@@ -198,16 +192,17 @@ public class EventActivity extends AppCompatActivity{
         intent.putExtra("eventNote", data2);
         intent.putExtra("eventId", data3);
     }
-    private final int WEEK = 604800000;
 
     @SuppressLint("UnspecifiedImmutableFlag")
     private void setAlarmManager(int rqc) {
-        pendingIntent = PendingIntent.getBroadcast(EventActivity.this, rqc, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        if(pendingIntentMap.get(rqc) == null)pendingIntentMap.put(rqc,pendingIntent);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(EventActivity.this, rqc, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        pendingIntentMap.putIfAbsent(rqc, pendingIntent);
+        final int WEEK = 604800000;
         if(System.currentTimeMillis() > calendar.getTimeInMillis()) alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + WEEK, pendingIntentMap.get(rqc));
         else alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentMap.get(rqc));
     }
 
+    @SuppressLint({"DefaultLocale", "SetTextI18n"})
     private void showTimePicker(TextView txt) {
         picker = new MaterialTimePicker.Builder()
                 .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -218,13 +213,10 @@ public class EventActivity extends AppCompatActivity{
 
         picker.show(getSupportFragmentManager(),"Schedule");
 
-        picker.addOnPositiveButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                txt.setText(String.format("%02d", picker.getHour()) + ":" + String.format("%02d", picker.getMinute()));
+        picker.addOnPositiveButtonClickListener(v -> {
+            txt.setText(String.format("%02d", picker.getHour()) + ":" + String.format("%02d", picker.getMinute()));
 
-                setCalendar(picker.getHour(), picker.getMinute());
-            }
+            setCalendar(picker.getHour(), picker.getMinute());
         });
     }
 
@@ -269,11 +261,11 @@ public class EventActivity extends AppCompatActivity{
                 .show();
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        txtEditTime = (TextView) view.findViewById(R.id.txtEditTime);
-        edtEditEventName = (EditText) view.findViewById(R.id.edtEditEventName);
-        edtEditNote = (EditText) view.findViewById(R.id.edtEditNote);
-        btnSave = (Button) view.findViewById(R.id.btnSave);
-        swStatus = (Switch) view.findViewById(R.id.swEditStatus);
+        txtEditTime = view.findViewById(R.id.txtEditTime);
+        edtEditEventName = view.findViewById(R.id.edtEditEventName);
+        edtEditNote = view.findViewById(R.id.edtEditNote);
+        Button btnSave = view.findViewById(R.id.btnSave);
+        swStatus = view.findViewById(R.id.swEditStatus);
 
         txtEditTime.setText(Application.getInstance().getDays().get(index).getEvents().get(position).getTime());
         edtEditEventName.setText(Application.getInstance().getDays().get(index).getEvents().get(position).getName());
@@ -288,12 +280,7 @@ public class EventActivity extends AppCompatActivity{
             Application.getInstance().getDays().get(index).getEvents().get(position).setStatus(b);
         });
 
-        txtEditTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showTimePicker(txtEditTime);
-            }
-        });
+        txtEditTime.setOnClickListener(view1 -> showTimePicker(txtEditTime));
 
         btnSave.setOnClickListener(view12 -> {
             try {
@@ -319,12 +306,9 @@ public class EventActivity extends AppCompatActivity{
                 .setIcon(R.drawable.delete_icon)
                 .setTitle("Delete.")
                 .setMessage("Do you want to delete this event?")
-                .setPositiveButton("Yes", (dialogInterface, id) -> {
-                    deleteEvent(position);
-                })
+                .setPositiveButton("Yes", (dialogInterface, id) -> deleteEvent(position))
                 .setNegativeButton("No", null)
                 .show();
-        if(Application.getInstance().getDays().get(index).getEvents().size() == 0) img.setVisibility(View.VISIBLE);
     }
 
     private void deleteEvent(int position) {
@@ -333,6 +317,7 @@ public class EventActivity extends AppCompatActivity{
         Application.getInstance().getDays().get(index).getEvents().remove(position);
         adapter.setData(Application.getInstance().getDays().get(index).getEvents());
         Toast.makeText(EventActivity.this, "Delete successfully!...", Toast.LENGTH_SHORT).show();
+        if(Application.getInstance().getDays().get(index).getEvents().size() == 0) img.setVisibility(View.VISIBLE);
     }
 
     private void onClick() {

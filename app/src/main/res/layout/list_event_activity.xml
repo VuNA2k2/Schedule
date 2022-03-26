@@ -9,27 +9,24 @@
         android:id="@+id/btnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="@+id/listEvent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.863"
+        app:layout_constraintHorizontal_bias="0.967"
         app:layout_constraintStart_toStartOf="@+id/img"
-        app:layout_constraintTop_toBottomOf="@+id/img"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.945"
         app:srcCompat="@drawable/ic_baseline_add_24" />
 
     <ImageView
         android:id="@+id/img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
+        android:layout_width="683dp"
+        android:layout_height="782dp"
         app:layout_constraintBottom_toBottomOf="@+id/listEvent"
         app:layout_constraintEnd_toEndOf="@+id/coordinatorLayout"
         app:layout_constraintStart_toStartOf="@+id/coordinatorLayout"
         app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout"
-        app:layout_constraintVertical_bias="0.326"
-        app:srcCompat="@drawable/ic_baseline_event_note_24" />
+        app:layout_constraintVertical_bias="0.373" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout"
@@ -55,7 +52,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/listEvent"
-        android:layout_width="match_parent "
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="40dp"
         android:padding="16dp"

@@ -1,10 +1,8 @@
 package com.example.schedule.Model;
 
 import androidx.room.Entity;
-import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
-import java.io.Serializable;
 
 @Entity(tableName = "events")
 public class Event{
@@ -12,7 +10,7 @@ public class Event{
     private int id;
     private String name;
     private String time; // hh:mm
-    private String day;
+    private final String day;
     private boolean status;
     private String note;
     private boolean isDone;
@@ -44,10 +42,6 @@ public class Event{
 
     public String getDay() {
         return day;
-    }
-
-    public void setDay(String day) {
-        this.day = day;
     }
 
     public boolean getStatus() {

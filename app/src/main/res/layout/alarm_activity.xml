@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txtAlarmName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/round_border_edt"
+        android:padding="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/txtAlarmTime"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/txtAlarmTime"
+        app:layout_constraintTop_toBottomOf="@+id/txtAlarmTime" />
+
+    <TextView
+        android:id="@+id/txtAlarmNote"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="68dp"
+        android:background="@drawable/round_border_edt"
+        android:maxLines="5"
+        android:padding="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/txtAlarmName"
+        app:layout_constraintStart_toStartOf="@+id/txtAlarmName"
+        app:layout_constraintTop_toBottomOf="@+id/txtAlarmName" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="108dp"
+        android:background="@drawable/round_border_button"
+        android:text="Cancel"
+        app:layout_constraintEnd_toEndOf="@+id/txtAlarmNote"
+        app:layout_constraintStart_toStartOf="@+id/txtAlarmNote"
+        app:layout_constraintTop_toBottomOf="@+id/txtAlarmNote" />
+
+    <TextView
+        android:id="@+id/txtAlarmTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/round_border_edt"
+        android:padding="16dp"
+        android:text="TextView"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/imgBell"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <ImageView
+        android:id="@+id/imgBell"
+        android:layout_width="225dp"
+        android:layout_height="192dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bell" />
+</androidx.constraintlayout.widget.ConstraintLayout>

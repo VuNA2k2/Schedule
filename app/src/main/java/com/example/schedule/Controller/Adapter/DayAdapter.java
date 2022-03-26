@@ -20,16 +20,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
-    private List<Day> days = new ArrayList<>();
-    private Interface.ItemClickListener itemClickListener;
+    private List<Day> days;
+    private final Interface.ItemClickListener itemClickListener;
     private Activity activity;
 
+    @SuppressLint("NotifyDataSetChanged")
     public DayAdapter(List<Day> days, Interface.ItemClickListener itemClickListener) {
         this.days = days;
         this.itemClickListener = itemClickListener;
         notifyDataSetChanged();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setData(List<Day> days) {
         this.days = days;
         notifyDataSetChanged();
@@ -46,6 +48,7 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
         return new DayViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull DayViewHolder holder, @SuppressLint("RecyclerView") int position) {
         if (days.get(position) == null) return;
@@ -56,25 +59,17 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
         // set list event mini
         List<Event> tmp = new ArrayList<>();
         for (Event event : days.get(position).getEvents()) {
-            if (event.getStatus() == true) tmp.add(event);
+            if (event.getStatus()) tmp.add(event);
         }
         EventMiniAdapter adapter = new EventMiniAdapter(tmp, activity);
         holder.spMiniEvent.setAdapter(adapter);
 
         //set on click
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                itemClickListener.onItemClick(position);
-            }
-        });
+        holder.itemView.setOnClickListener(view -> itemClickListener.onItemClick(position));
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                itemClickListener.onItemLongClick(position);
-                return true;
-            }
+        holder.itemView.setOnLongClickListener(view -> {
+            itemClickListener.onItemLongClick(position);
+            return true;
         });
 
         if (tmp.size() == 0) holder.txtMessage.setText("No tasks yet");
@@ -86,15 +81,16 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.DayViewHolder> {
         return days.size();
     }
 
-    public class DayViewHolder extends RecyclerView.ViewHolder {
-        private TextView txtDay, txtMessage;
-        private Spinner spMiniEvent;
+    public static class DayViewHolder extends RecyclerView.ViewHolder {
+        private final TextView txtDay;
+        private final TextView txtMessage;
+        private final Spinner spMiniEvent;
 
         public DayViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtDay = (TextView) itemView.findViewById(R.id.txtDay);
-            spMiniEvent = (Spinner) itemView.findViewById(R.id.spMiniEvent);
-            txtMessage = (TextView) itemView.findViewById(R.id.txtMessage);
+            txtDay = itemView.findViewById(R.id.txtDay);
+            spMiniEvent = itemView.findViewById(R.id.spMiniEvent);
+            txtMessage = itemView.findViewById(R.id.txtMessage);
         }
     }
 }

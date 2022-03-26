@@ -1,5 +1,6 @@
 package com.example.schedule.Controller.Adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,14 +10,12 @@ import android.widget.TextView;
 
 import com.example.schedule.Model.Event;
 import com.example.schedule.R;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class EventMiniAdapter extends BaseAdapter {
 
-    private List<Event> events = new ArrayList<>();
-    private Activity activity;
+    private final List<Event> events;
+    private final Activity activity;
 
     public EventMiniAdapter(List<Event> events, Activity activity) {
         this.events = events;
@@ -38,6 +37,7 @@ public class EventMiniAdapter extends BaseAdapter {
         return i;
     }
 
+    @SuppressLint("ViewHolder")
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = LayoutInflater.from(activity).inflate(R.layout.event_mini_item, viewGroup, false);
