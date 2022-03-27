@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,9 +43,11 @@ import com.google.android.material.timepicker.TimeFormat;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TimeZone;
 
 
 public class EventActivity extends AppCompatActivity{
@@ -127,7 +130,8 @@ public class EventActivity extends AppCompatActivity{
         alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         intent = new Intent(EventActivity.this, AlarmReceiver.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-        calendar = Calendar.getInstance();
+        calendar = new GregorianCalendar(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
+        //calendar.setTimeInMillis(System.currentTimeMillis());
     }
 
     private void swipeToDelete() {
@@ -198,8 +202,8 @@ public class EventActivity extends AppCompatActivity{
         PendingIntent pendingIntent = PendingIntent.getBroadcast(EventActivity.this, rqc, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         pendingIntentMap.putIfAbsent(rqc, pendingIntent);
         final int WEEK = 604800000;
-        if(System.currentTimeMillis() > calendar.getTimeInMillis()) alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + WEEK, pendingIntentMap.get(rqc));
-        else alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentMap.get(rqc));
+        if(System.currentTimeMillis() > calendar.getTimeInMillis()) alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis() + WEEK, pendingIntentMap.get(rqc));
+        else alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntentMap.get(rqc));
     }
 
     @SuppressLint({"DefaultLocale", "SetTextI18n"})

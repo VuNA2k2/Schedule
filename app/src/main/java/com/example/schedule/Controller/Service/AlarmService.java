@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -45,6 +46,12 @@ public class AlarmService extends Service {
         bundle = intent.getExtras();
         Log.e("Output", bundle.getString("eventName") + " " + bundle.getString("eventNote") + " " + bundle.getString("eventId"));
 
+        MediaPlayer mediaPlayer;
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.notification);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(100, 100);
+        mediaPlayer.start();
+
         sendNotification();
 
         return START_NOT_STICKY;
@@ -74,5 +81,4 @@ public class AlarmService extends Service {
             notificationManager.notify(Integer.parseInt(bundle.getString("eventId")),notification);
         }
     }
-
 }
