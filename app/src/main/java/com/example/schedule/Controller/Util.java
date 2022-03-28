@@ -1,12 +1,24 @@
 package com.example.schedule.Controller;
 
+import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.provider.OpenableColumns;
+import android.text.TextUtils;
 import android.util.Log;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -24,60 +36,9 @@ public class Util {
         return instance;
     }
 
-    public <T> List<T> reader(String fileName, Context context) {
-        FileInputStream fis = null;
-        ObjectInputStream objin = null;
-        List<T> list = null;
-
-        try {
-            fis = context.openFileInput(path + fileName);
-            objin = new ObjectInputStream(fis);
-            list = (List<T>) objin.readObject();
-
-        } catch (Exception e) {
-            Log.e("Error", "Read failed");
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (objin != null) {
-                    objin.close();
-                }
-            } catch (Exception e) {
-            }
-        }
-        return list;
-    }
-
-    public <T> void writer(String fileName, List<T> list, Context context) {
-        FileOutputStream fos = null;
-        ObjectOutputStream oos = null;
-        try {
-            fos = context.openFileOutput(path + fileName, Context.MODE_PRIVATE);
-            oos = new ObjectOutputStream(fos);
-            oos.writeObject(list);
-            oos.close();
-            fos.close();
-        } catch (FileNotFoundException e) {
-            Log.e("Exception","Write to file failed");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void checkEmptyException(String s) throws MyException.EmptyException {
         if(s.length() == 0) throw new MyException.EmptyException();
     }
 
-//        try {
-//            FileOutputStream fos = new FileOutputStream(path + fileName);
-//            ObjectOutputStream oos = new ObjectOutputStream(fos);
-//            oos.writeObject(list);
-//            oos.close();
-//            fos.close();
-//        } catch (Exception e) {
-//            Log.e("Exception","Write to file failed");
-//        }
-//    }
+
 }

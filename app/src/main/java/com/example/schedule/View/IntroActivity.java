@@ -10,14 +10,15 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.schedule.R;
 import com.example.schedule.View.MainActivity;
 
 public class IntroActivity extends AppCompatActivity {
-    private TextView txtAppName;
+    private TextView txtAppName, txtDevloped;
     private ImageView imgLogo;
-    private Animation up, down;
+    private Animation up, down, left;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,11 +34,14 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     private void init() {
-        txtAppName = (TextView) findViewById(R.id.txtAppName);
-        imgLogo = (ImageView) findViewById(R.id.imgLogo);
+        txtDevloped = findViewById(R.id.txtDeveloped);
+        txtAppName = findViewById(R.id.txtAppName);
+        imgLogo = findViewById(R.id.imgLogo);
         up = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.animation_up);
         down = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.animation_down);
+        left = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.animation_left);
         txtAppName.setAnimation(down);
         imgLogo.setAnimation(up);
+        txtDevloped.setAnimation(left);
     }
 }

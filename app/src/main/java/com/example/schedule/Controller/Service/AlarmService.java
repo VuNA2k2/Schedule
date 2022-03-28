@@ -22,20 +22,30 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.example.schedule.App;
+import com.example.schedule.Model.Music;
 import com.example.schedule.R;
 import com.example.schedule.View.AlarmActivity;
 
+import java.io.Serializable;
+
 public class AlarmService extends Service {
     private Bundle bundle;
-
+    private MediaPlayer mediaPlayer;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
+    @SuppressLint("WrongConstant")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        bundle = intent.getExtras();
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), bundle.getInt("music"));
+        mediaPlayer.setLooping(true);
+        mediaPlayer.setVolume(100, 100);
+        mediaPlayer.start();
+        //mediaPlayer.start();
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
         wakeLock.acquire();
@@ -43,18 +53,22 @@ public class AlarmService extends Service {
         KeyguardManager keyguardManager = (KeyguardManager) getApplicationContext().getSystemService(Context.KEYGUARD_SERVICE);
         KeyguardManager.KeyguardLock keyguardLock = keyguardManager.newKeyguardLock("TAG");
         keyguardLock.disableKeyguard();
-        bundle = intent.getExtras();
-        Log.e("Output", bundle.getString("eventName") + " " + bundle.getString("eventNote") + " " + bundle.getString("eventId"));
-
-        MediaPlayer mediaPlayer;
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.notification);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(100, 100);
-        mediaPlayer.start();
+        Log.e("Service", bundle.getString("eventName") + " " + bundle.getString("eventNote") + " " + bundle.getString("eventId"));
 
         sendNotification();
+        return START_FLAG_REDELIVERY;
+    }
 
-        return START_NOT_STICKY;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(mediaPlayer != null)mediaPlayer.stop();
+        mediaPlayer.release();
     }
 
     private void sendNotification() {
@@ -63,6 +77,7 @@ public class AlarmService extends Service {
         mIntent.putExtra("eventName", bundle.getString("eventName"));
         mIntent.putExtra("eventNote", bundle.getString("eventNote"));
         mIntent.putExtra("eventId", bundle.getString("eventId"));
+        mIntent.putExtra("music", bundle.getInt("music"));
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(bundle.getString("eventId")), mIntent, 0);
 

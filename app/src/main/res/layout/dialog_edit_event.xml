@@ -7,6 +7,18 @@
     android:background="@drawable/round_border_dialog"
     android:padding="16dp">
 
+    <Spinner
+        android:id="@+id/spEditMusic"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="0dp"
+        android:paddingLeft="0dp"
+        android:popupBackground="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="@+id/edtEditNote"
+        app:layout_constraintStart_toStartOf="@+id/edtEditNote"
+        app:layout_constraintTop_toBottomOf="@+id/edtEditNote" />
+
     <EditText
         android:id="@+id/edtEditEventName"
         android:layout_width="0dp"
@@ -84,9 +96,9 @@
         android:layout_marginTop="16dp"
         android:background="@drawable/round_border_edt"
         android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/edtEditNote"
-        app:layout_constraintStart_toStartOf="@+id/edtEditNote"
-        app:layout_constraintTop_toBottomOf="@id/edtEditNote">
+        app:layout_constraintEnd_toEndOf="@+id/spEditMusic"
+        app:layout_constraintStart_toStartOf="@+id/spEditMusic"
+        app:layout_constraintTop_toBottomOf="@+id/spEditMusic">
 
         <Switch
             android:id="@+id/swEditStatus"
@@ -115,6 +127,7 @@
             app:layout_constraintHorizontal_bias="0.056"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.schedule.Model.Music;
 import com.example.schedule.R;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +33,7 @@ public class AlarmActivity extends AppCompatActivity {
 
     private void init() {
         Bundle bundle = getIntent().getExtras();
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.notification);
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), bundle.getInt("music"));
         mediaPlayer.setLooping(true);
         mediaPlayer.setVolume(100, 100);
         mediaPlayer.start();
@@ -43,7 +43,12 @@ public class AlarmActivity extends AppCompatActivity {
         txtAlarmNote = findViewById(R.id.txtAlarmNote);
         btnCancel = findViewById(R.id.btnCancel);
         Glide.with(getApplicationContext()).load(R.drawable.bell).into(imgBell);
-        btnCancel.setOnClickListener(view -> finish());
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         txtAlarmTime.setText(sdf.format(System.currentTimeMillis()));
@@ -56,5 +61,14 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
+        onStop();
+        onDestroy();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mediaPlayer.stop();
+        mediaPlayer.release();
     }
 }

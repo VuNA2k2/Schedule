@@ -12,9 +12,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,7 +31,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.schedule.App;
 import com.example.schedule.Controller.Adapter.EventAdapter;
+import com.example.schedule.Controller.Adapter.MusicAdapter;
 import com.example.schedule.Controller.Application;
 import com.example.schedule.Controller.Interface;
 import com.example.schedule.Controller.MyException;
@@ -67,6 +72,8 @@ public class EventActivity extends AppCompatActivity{
     private EditText edtEventName, edtNote;
     private TextView txtEditTime;
     private EditText edtEditEventName, edtEditNote;
+    private Spinner spEditMusic, spMusic;
+    private MusicAdapter musicAdapter;
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     private Switch swStatus;
     private final Map<Integer, PendingIntent> pendingIntentMap = new HashMap<>();
@@ -132,6 +139,7 @@ public class EventActivity extends AppCompatActivity{
         intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         calendar = new GregorianCalendar(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
         //calendar.setTimeInMillis(System.currentTimeMillis());
+        musicAdapter = new MusicAdapter(Application.getInstance().getMusics(), EventActivity.this);
     }
 
     private void swipeToDelete() {
@@ -158,10 +166,14 @@ public class EventActivity extends AppCompatActivity{
                 .show();
         alertDio.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        txtTime = view.findViewById(R.id.txtEditTime);
-        edtEventName = view.findViewById(R.id.edtEditEventName);
-        edtNote = view.findViewById(R.id.edtEditNote);
+        txtTime = view.findViewById(R.id.txtTime);
+        edtEventName = view.findViewById(R.id.edtEventName);
+        edtNote = view.findViewById(R.id.edtNote);
         Button btnAddEvent = view.findViewById(R.id.btnSave);
+
+        spMusic = view.findViewById(R.id.spMusic);
+        spMusic.setAdapter(musicAdapter);
+
 
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -180,6 +192,7 @@ public class EventActivity extends AppCompatActivity{
                 event.setId(id);
                 Application.getInstance().getDays().get(index).getEvents().add(event);
                 adapter.setData(Application.getInstance().getDays().get(index).getEvents());
+                intent.putExtra("music", Application.getInstance().getMusics().get(spMusic.getSelectedItemPosition()).getId());
                 sendData(edtEventName.getText().toString().trim(), edtNote.getText().toString().trim(), String.valueOf(id));
                 setAlarmManager(id);
                 img.setVisibility(View.INVISIBLE);
@@ -284,6 +297,10 @@ public class EventActivity extends AppCompatActivity{
             Application.getInstance().getDays().get(index).getEvents().get(position).setStatus(b);
         });
 
+
+        spEditMusic = view.findViewById(R.id.spEditMusic);
+        spEditMusic.setAdapter(musicAdapter);
+
         txtEditTime.setOnClickListener(view1 -> showTimePicker(txtEditTime));
 
         btnSave.setOnClickListener(view12 -> {
@@ -295,6 +312,7 @@ public class EventActivity extends AppCompatActivity{
                 Application.getInstance().getDays().get(index).getEvents().get(position).setNote(edtEditNote.getText().toString().trim());
                 EventsDatabase.getInstance(EventActivity.this).eventDAO().updateEvent( Application.getInstance().getDays().get(index).getEvents().get(position));
                 adapter.setData(Application.getInstance().getDays().get(index).getEvents());
+                intent.putExtra("music", Application.getInstance().getMusics().get(spEditMusic.getSelectedItemPosition()).getId());
                 sendData(edtEditEventName.getText().toString().trim(), edtEditNote.getText().toString().trim(), String.valueOf( Application.getInstance().getDays().get(index).getEvents().get(position).getId()));
                 if(swStatus.isChecked()) setAlarmManager(Application.getInstance().getDays().get(index).getEvents().get(position).getId());
                 else if(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()) != null) alarmManager.cancel(pendingIntentMap.get(Application.getInstance().getDays().get(index).getEvents().get(position).getId()));
