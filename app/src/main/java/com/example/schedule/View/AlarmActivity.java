@@ -1,5 +1,6 @@
 package com.example.schedule.View;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.example.schedule.Controller.Service.AlarmService;
 import com.example.schedule.Model.Music;
 import com.example.schedule.R;
 
@@ -27,6 +29,7 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        stopService(new Intent(this, AlarmService.class));
         setContentView(R.layout.alarm_activity);
         init();
     }

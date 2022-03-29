@@ -45,6 +45,7 @@ public class AlarmService extends Service {
         mediaPlayer.setLooping(true);
         mediaPlayer.setVolume(100, 100);
         mediaPlayer.start();
+
         //mediaPlayer.start();
         PowerManager pm = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         @SuppressLint("InvalidWakeLockTag") PowerManager.WakeLock wakeLock = pm.newWakeLock((PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP), "TAG");
@@ -56,13 +57,29 @@ public class AlarmService extends Service {
         Log.e("Service", bundle.getString("eventName") + " " + bundle.getString("eventNote") + " " + bundle.getString("eventId"));
 
         sendNotification();
-        return START_FLAG_REDELIVERY;
+
+//        Intent mIntent = new Intent(this, AlarmActivity.class);
+//        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        mIntent.putExtra("eventName", bundle.getString("eventName"));
+//        mIntent.putExtra("eventNote", bundle.getString("eventNote"));
+//        mIntent.putExtra("eventId", bundle.getString("eventId"));
+//        mIntent.putExtra("music", bundle.getInt("music"));
+//        startActivity(mIntent);
+        return START_STICKY;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
     }
+
+//    @Override
+//    public void onStart(Intent intent, int startId) {
+//        super.onStart(intent, startId);
+//        Intent mIntent = new Intent(this, AlarmActivity.class);
+//        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(mIntent);
+//    }
 
     @Override
     public void onDestroy() {

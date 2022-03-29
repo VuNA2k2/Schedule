@@ -22,6 +22,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         mIntent.putExtra("music", bundle.getInt("music"));
         Log.e("Output", "hello from receiver");
         Log.e("Output", bundle.getString("eventName") + " " + bundle.getString("eventNote") + " " + bundle.getString("eventId") + " " + bundle.getInt("music"));
-        context.startForegroundService(mIntent);
+        context.startService(mIntent);
     }
 }

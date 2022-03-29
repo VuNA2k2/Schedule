@@ -185,6 +185,7 @@ public class EventActivity extends AppCompatActivity{
 
         btnAddEvent.setOnClickListener(view12 -> {
             try {
+                if(edtNote.getText().length() == 0) edtNote.setText("");
                 Util.getInstance().checkEmptyException(edtEventName.getText().toString().trim());
                 Util.getInstance().checkEmptyException(txtTime.getText().toString().trim());
                 Event event = new Event(edtEventName.getText().toString().trim(), txtTime.getText().toString().trim(),dayName,true, edtNote.getText().toString().trim());
@@ -305,6 +306,7 @@ public class EventActivity extends AppCompatActivity{
 
         btnSave.setOnClickListener(view12 -> {
             try {
+                if(edtEditNote.getText().length() == 0) edtEditNote.setText("");
                 Util.getInstance().checkEmptyException(edtEditEventName.getText().toString().trim());
                 Util.getInstance().checkEmptyException(txtEditTime.getText().toString().trim());
                 Application.getInstance().getDays().get(index).getEvents().get(position).setName(edtEditEventName.getText().toString().trim());
