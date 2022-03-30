@@ -3,10 +3,13 @@ package com.example.schedule.View;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Adapter;
+import android.widget.TextClock;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -30,10 +33,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private RecyclerView listDays;
     private DayAdapter adapter = null;
+    private TextClock textClock, textDate;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         loadData();
         init();
         Log.e("Exception", "On create");
@@ -72,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     }
     private void init() {
         listDays = (RecyclerView) findViewById(R.id.listDays);
+        textClock = findViewById(R.id.textClock);
+        textDate = findViewById(R.id.textDate);
         LinearLayoutManager linearLayout = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         listDays.setLayoutManager(linearLayout);
         listDays.setHasFixedSize(true);
