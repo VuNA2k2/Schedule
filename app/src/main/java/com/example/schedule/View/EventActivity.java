@@ -7,10 +7,12 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
@@ -211,7 +213,7 @@ public class EventActivity extends AppCompatActivity{
         intent.putExtra("eventId", data3);
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
+    @SuppressLint({"UnspecifiedImmutableFlag", "NewApi"})
     private void setAlarmManager(int rqc) {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(EventActivity.this, rqc, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         pendingIntentMap.putIfAbsent(rqc, pendingIntent);
@@ -344,6 +346,7 @@ public class EventActivity extends AppCompatActivity{
         if(Application.getInstance().getDays().get(index).getEvents().size() == 0) img.setVisibility(View.VISIBLE);
     }
 
+
     private void onClick() {
         btnAdd.setOnClickListener(view -> addEvent());
     }
@@ -352,7 +355,28 @@ public class EventActivity extends AppCompatActivity{
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.bottom_app_bar_menu, menu);
+
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.btnAppBarAbout:
+                Intent intent = new Intent(this, AboutActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.btnAppBarContactMe:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/vuvovan2k2"));
+                startActivity(browserIntent);
+                break;
+            case R.id.btnAppBarAddEvent:
+                addEvent();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

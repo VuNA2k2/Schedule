@@ -30,6 +30,7 @@
         <activity android:name=".View.MainActivity" />
         <activity android:name=".View.EventActivity" />
         <activity android:name=".View.AlarmActivity"/>
+        <activity android:name=".View.AboutActivity"/>
         <receiver android:name=".Controller.Receiver.AlarmReceiver"/>
         <service android:name=".Controller.Service.AlarmService"
             android:enabled="true"/>
