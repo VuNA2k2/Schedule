@@ -1,10 +1,8 @@
 package com.example.schedule.View;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,23 +13,15 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.schedule.Controller.Service.AlarmService;
-import com.example.schedule.Model.Music;
 import com.example.schedule.R;
 
 import java.text.SimpleDateFormat;
 
 public class AlarmActivity extends AppCompatActivity {
 
-    private ImageView imgBell;
-    private TextView txtAlarmTime;
-    private TextView txtAlarmName;
-    private TextView txtAlarmNote;
-    private Button btnCancel;
-    private MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        stopService(new Intent(this, AlarmService.class));
         setContentView(R.layout.alarm_activity);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -40,26 +30,18 @@ public class AlarmActivity extends AppCompatActivity {
 
     private void init() {
         Bundle bundle = getIntent().getExtras();
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), bundle.getInt("music"));
-        mediaPlayer.setLooping(true);
-        mediaPlayer.setVolume(100, 100);
-        mediaPlayer.start();
-        imgBell = findViewById(R.id.imgBell);
-        txtAlarmTime = findViewById(R.id.txtAlarmTime);
-        txtAlarmName = findViewById(R.id.txtAlarmName);
-        txtAlarmNote = findViewById(R.id.txtAlarmNote);
-        btnCancel = findViewById(R.id.btnCancel);
+        ImageView imgBell = findViewById(R.id.imgBell);
+        TextView txtAlarmTime = findViewById(R.id.txtAlarmTime);
+        TextView txtAlarmName = findViewById(R.id.txtAlarmName);
+        TextView txtAlarmNote = findViewById(R.id.txtAlarmNote);
+        Button btnCancel = findViewById(R.id.btnCancel);
         Glide.with(getApplicationContext()).load(R.drawable.bell).into(imgBell);
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onStop();
-                onDestroy();
-                finish();
-            }
+        btnCancel.setOnClickListener(view -> {
+            stopService(new Intent(AlarmActivity.this, AlarmService.class));
+            finish();
         });
 
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         txtAlarmTime.setText(sdf.format(System.currentTimeMillis()));
 
         txtAlarmName.setText(bundle.getString("eventName"));
@@ -75,7 +57,5 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        mediaPlayer.stop();
-        mediaPlayer.release();
     }
 }

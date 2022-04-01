@@ -3,7 +3,6 @@ package com.example.schedule.Controller.Service;
 import android.annotation.SuppressLint;
 import android.app.KeyguardManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -11,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -19,14 +17,11 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import com.example.schedule.App;
-import com.example.schedule.Model.Music;
 import com.example.schedule.R;
 import com.example.schedule.View.AlarmActivity;
 
-import java.io.Serializable;
 
 public class AlarmService extends Service {
     private Bundle bundle;
@@ -37,7 +32,7 @@ public class AlarmService extends Service {
         return null;
     }
 
-    @SuppressLint("WrongConstant")
+    @SuppressLint({"WrongConstant", "WakelockTimeout"})
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         bundle = intent.getExtras();
@@ -84,8 +79,10 @@ public class AlarmService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if(mediaPlayer != null)mediaPlayer.stop();
-        mediaPlayer.release();
+        if(mediaPlayer != null){
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
     }
 
     private void sendNotification() {
@@ -96,6 +93,7 @@ public class AlarmService extends Service {
         mIntent.putExtra("eventId", bundle.getString("eventId"));
         mIntent.putExtra("music", bundle.getInt("music"));
 
+        @SuppressLint("UnspecifiedImmutableFlag")
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(bundle.getString("eventId")), mIntent, 0);
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
