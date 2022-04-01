@@ -98,19 +98,24 @@ public class AlarmService extends Service {
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(bundle.getString("eventId")), mIntent, 0);
 
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
 
         Notification notification = new NotificationCompat.Builder(this, App.CHANNEL_ID)
-                .setContentTitle("Schedule")
-                .setContentText(bundle.getString("eventName") + "\n" + bundle.getString("eventNote"))
+                .setContentTitle(bundle.getString("eventName"))
+                .setContentText(bundle.getString("eventNote"))
                 .setLargeIcon(bitmap)
                 .setSmallIcon(R.drawable.ic_baseline_notifications_active_24)
+                .setShowWhen(true)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(bundle.getString("eventNote")))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_ALARM)
                 .setContentIntent(pendingIntent)
                 .build();
+        startForeground(2, notification);
 
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        if(notificationManager != null) {
-            notificationManager.notify(Integer.parseInt(bundle.getString("eventId")),notification);
-        }
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//        if(notificationManager != null) {
+//            notificationManager.notify(Integer.parseInt(bundle.getString("eventId")),notification);
+//        }
     }
 }

@@ -53,6 +53,8 @@ public class AlarmActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onStop();
+                onDestroy();
                 finish();
             }
         });
@@ -68,8 +70,6 @@ public class AlarmActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        onStop();
-        onDestroy();
     }
 
     @Override

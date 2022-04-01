@@ -3,14 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/btnSearch"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:iconTint="#FFFFFF"
-        android:title="Search"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
-
-    <item
         android:id="@+id/btnAppBarAddEvent"
         android:iconTint="#000000"
         android:title="Add Event" />
