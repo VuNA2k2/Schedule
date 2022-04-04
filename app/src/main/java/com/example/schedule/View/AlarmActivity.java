@@ -44,9 +44,9 @@ public class AlarmActivity extends AppCompatActivity {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         txtAlarmTime.setText(sdf.format(System.currentTimeMillis()));
 
-        txtAlarmName.setText(bundle.getString("eventName"));
+        txtAlarmName.setText(bundle.getString("Name"));
 
-        txtAlarmNote.setText(bundle.getString("eventNote"));
+        txtAlarmNote.setText(bundle.getString("Note"));
     }
 
     @Override

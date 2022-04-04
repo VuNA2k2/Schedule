@@ -26,6 +26,7 @@ import com.example.schedule.View.AlarmActivity;
 public class AlarmService extends Service {
     private Bundle bundle;
     private MediaPlayer mediaPlayer;
+    Intent mIntent;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -36,6 +37,10 @@ public class AlarmService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         bundle = intent.getExtras();
+        mIntent = new Intent(this, AlarmActivity.class);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+        mIntent.putExtra("Name", bundle.getString("eventName"));
+        mIntent.putExtra("Note", bundle.getString("eventNote"));
         mediaPlayer = MediaPlayer.create(getApplicationContext(), bundle.getInt("music"));
         mediaPlayer.setLooping(true);
         mediaPlayer.setVolume(100, 100);
@@ -86,12 +91,6 @@ public class AlarmService extends Service {
     }
 
     private void sendNotification() {
-        Intent mIntent = new Intent(this, AlarmActivity.class);
-        mIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mIntent.putExtra("eventName", bundle.getString("eventName"));
-        mIntent.putExtra("eventNote", bundle.getString("eventNote"));
-        mIntent.putExtra("eventId", bundle.getString("eventId"));
-        mIntent.putExtra("music", bundle.getInt("music"));
 
         @SuppressLint("UnspecifiedImmutableFlag")
         PendingIntent pendingIntent = PendingIntent.getActivity(this, Integer.parseInt(bundle.getString("eventId")), mIntent, 0);
